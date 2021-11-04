@@ -7,6 +7,7 @@ const api = axios.create({
   },
 });
 
+// const res = await api.post('/books', {});
 /**
  * console.log all requests and responses
  */

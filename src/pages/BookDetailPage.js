@@ -2,15 +2,15 @@ import React, { useState, useEffect } from "react";
 import { Button, Col, Container, Row } from "react-bootstrap";
 import { ClipLoader } from "react-spinners";
 import { useParams } from "react-router-dom";
-import { toast } from "react-toastify";
-import api from "../apiService";
 
+import { useDispatch, useSelector } from "react-redux";
+import cartActions from "../redux/actions/cart.actions";
+import bookActions from "../redux/actions/book.actions";
 const BACKEND_API = process.env.REACT_APP_BACKEND_API;
 
 const BookDetailPage = () => {
-  const [loading, setLoading] = useState(false);
-  const [book, setBook] = useState(null);
   const [addingBook, setAddingBook] = useState(false);
+  const [addingBookToCart, setAddingBookToCart] = useState(false);
   const params = useParams();
   const bookId = params.id;
 
@@ -18,33 +18,29 @@ const BookDetailPage = () => {
     setAddingBook(book);
   };
 
+  const addToCart = (book) => {
+    setAddingBookToCart(book);
+  };
+
   useEffect(() => {
-    const postData = async () => {
-      if (!addingBook) return;
-      setLoading(true);
-      try {
-        await api.post(`/favorites`, addingBook);
-        toast.success("The book has been added to the reading list!");
-      } catch (error) {
-        toast.error(error.message);
-      }
-      setLoading(false);
-    };
-    postData();
+    if (addingBook) {
+      dispatch(bookActions.addToFavorite({addingBook}))
+    }
   }, [addingBook]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await api.get(`/books/${bookId}`);
-        setBook(res.data);
-      } catch (error) {
-        toast.error(error.message);
-      }
-      setLoading(false);
-    };
-    fetchData();
+    if (addingBookToCart) {
+      dispatch(cartActions.addToCart({addingBookToCart}))
+    }
+  }, [addingBookToCart]);
+
+  const dispatch = useDispatch();
+  const book = useSelector((state) => state.books.books);
+  const loading = useSelector(state => state.books.loading);
+  // console.log("book", book);
+  // const errorMessage = useSelector(state => state.books.errorMessage);
+  useEffect(() => {
+    dispatch(bookActions.getBookDetail({bookId}));
   }, [bookId]);
 
   return (
@@ -85,6 +81,9 @@ const BookDetailPage = () => {
                 </div>
                 <Button onClick={() => addToReadingList(book)}>
                   Add to Reading List
+                </Button>{" "}
+                <Button onClick={() => addToCart(book)}>
+                  Add to Your Cart
                 </Button>{" "}
               </>
             )}

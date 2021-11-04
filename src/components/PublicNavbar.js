@@ -7,6 +7,7 @@ import { NavLink } from "react-router-dom";
 const PublicNavbar = () => {
   return (
     <Navbar bg="light" expand="lg">
+
       <Navbar.Brand>
         <img src={logo} alt="CoderSchool" width="200px" />
       </Navbar.Brand>
@@ -19,9 +20,12 @@ const PublicNavbar = () => {
         </Nav.Link>
       </Nav>
       <Nav>
-        <a href="#your_github_repo_link" target="_blank">
+        <Nav.Link as={NavLink} to="/cart">
+        Cart
+        </Nav.Link>
+        <Nav.Link as={NavLink} to="/">
           <img src={githubIco} alt="Github" width="32px" />
-        </a>
+        </Nav.Link>
       </Nav>
     </Navbar>
   );
